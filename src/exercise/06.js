@@ -3,10 +3,15 @@
 
 import * as React from 'react'
 
+const formatCountDebugValue = ({query, state}) =>
+  `query: ${query}; state: ${state}`
+
 function useMedia(query, initialState = false) {
   const [state, setState] = React.useState(initialState)
   // 🐨 call React.useDebugValue here.
   // 💰 here's the formatted label I use: `\`${query}\` => ${state}`
+  // `${query} => ${state}`
+  React.useDebugValue({query, state}, formatCountDebugValue)
 
   React.useEffect(() => {
     let mounted = true
@@ -18,12 +23,13 @@ function useMedia(query, initialState = false) {
       setState(Boolean(mql.matches))
     }
 
-    mql.addListener(onChange)
+    mql.addEventListener('change', onChange)
+
     setState(mql.matches)
 
     return () => {
       mounted = false
-      mql.removeListener(onChange)
+      mql.removeEventListener('change', onChange)
     }
   }, [query])
 
